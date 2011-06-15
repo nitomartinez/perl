@@ -127,6 +127,7 @@ Perl_fbm_instr
 Perl_filter_add
 Perl_filter_del
 Perl_filter_read
+Perl_finalize_optree
 Perl_find_runcv
 Perl_find_rundefsv
 Perl_find_rundefsvoffset
