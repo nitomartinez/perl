@@ -39,6 +39,7 @@ bug*.pl
 
 # produced by dtrace -H when configured with usedtrace
 perldtrace.h
+perldtrace.h.in
 
 # general build products
 *.o
