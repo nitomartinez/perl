@@ -283,6 +283,8 @@ sub full_setup {
     XS_VERSION clean depend dist dynamic_lib linkext macro realclean
     tool_autosplit
 
+    PERLRUN_CROSS
+
     MACPERL_SRC MACPERL_LIB MACLIBS_68K MACLIBS_PPC MACLIBS_SC MACLIBS_MRC
     MACLIBS_ALL_68K MACLIBS_ALL_PPC MACLIBS_SHARED
         /;
@@ -2143,6 +2145,13 @@ Overridden by PREFIX.
 Use this instead of $(PERL) when you wish to run perl.  It will set up
 extra necessary flags for you.
 
+=item PERLRUN_CROSS
+
+If cross-compiling, set this to the perl command line parameters
+needed to configure cross-compilation.  These parameters are placed
+in the perl command line after the first parameter, C<"-I$(PERL_LIB)">.
+Common values for this parameter are C<-MCross> and C<-MCross=architecture>.
+    
 =item PERLRUNINST
 
 Use this instead of $(PERL) when you wish to run perl to work with
