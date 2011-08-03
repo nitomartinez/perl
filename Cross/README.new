@@ -66,9 +66,6 @@ is substituted, and resulting binaries will be a mess.
 C<miniperl -MCross -MConfig -we 1> should run okay, and it will provide a
 correct C<Config.pm> for further compilations.
 
-During extensions build phase, the script C<./ext/util/make_ext_cross> is
-invoked.
-
 All invocations of C<Makefile.PL> are provided with C<-MCross> so to enable
 cross-compilation.
 
@@ -76,7 +73,7 @@ cross-compilation.
 
 =head3 Tools & SDK
 
-To compile, you need the following:
+See the README.xyz files in the Cross/ directory for instructions on cross-compiling for various TARGET platforms.
 
 =over 4
 
