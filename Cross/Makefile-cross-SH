@@ -6,7 +6,7 @@
 # miniperl removed from here, as this is built on HOST
 
 Makefile=Makefile-cross-$CROSS_NAME
-
+CROSS_LIB=xlib/$CROSS_NAME
 . Cross/config-${CROSS_NAME}.sh
 
 # H.Merijn Brand [17 Feb 2004]
@@ -174,6 +174,13 @@ for f in $static_ext; do
 	static_list="$static_list lib/auto/$f/$base\$(LIB_EXT)"
 done
 
+static_real=' '
+for f in $static_ext; do
+	base=`echo "$f" | sed 's/.*\///'`
+	static_real="$static_real ${CROSS_LIB}/auto/$f/$base\$(LIB_EXT)"
+done
+
+
 nonxs_list=' '
 for f in $nonxs_ext; do
     base=`echo "$f" | sed 's/.*\///'`
@@ -241,6 +248,7 @@ LDLIBPTH = $ldlibpth
 
 dynamic_ext = $dynamic_list
 static_ext = $static_list
+static_real = $static_real
 nonxs_ext = $nonxs_list
 ext = \$(dynamic_ext) \$(static_ext) \$(nonxs_ext)
 DYNALOADER = DynaLoader\$(OBJ_EXT)
@@ -311,7 +319,7 @@ esac
 
 $spitshell >>$Makefile <<!GROK!THIS!
 CROSS_NAME = ${CROSS_NAME}
-CROSS_LIB = xlib/${CROSS_NAME}
+CROSS_LIB = ${CROSS_LIB}
 
 CCCMD    = \`sh \$(shellflags) cflags-cross-${CROSS_NAME} "optimize='\$(OPTIMIZE)'" \$@\`
 
@@ -463,8 +471,9 @@ $spitshell >>$Makefile <<'!NO!SUBS!'
 miniperlmain$(OBJ_EXT): miniperlmain.c patchlevel.h
 	$(CCCMD) $(PLDLFLAGS) $*.c
 
-perlmain.c: miniperlmain.c config.sh $(FIRSTMAKEFILE)
-	sh writemain $(DYNALOADER) $(static_ext) > perlmain.c
+perlmain.c: miniperlmain.c config.sh $(MAKEFILE) lib/ExtUtils/Miniperl.pm
+	./miniperl -Ilib -MExtUtils::Miniperl -e 'writemain(@ARGV)' DynaLoader $(static_ext) > perlmain.c
+
 
 !NO!SUBS!
 case "$osname" in
@@ -604,10 +613,14 @@ $(LIBPERL): $& $(obj) $(DYNALOADER) $(LIBPERLEXPORT)
 
 	$spitshell >>$Makefile <<'!NO!SUBS!'
 
+perl.$(CROSS_NAME): perl$(EXE_EXT)
+	mv perl$(EXE_EXT) perl.$(CROSS_NAME)
+	echo "[built perl$(CROSS_NAME)]"
+
 perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(LIBPERL) $(static_ext) ext.libs $(PERLEXPORT)
 	-@rm -f miniperl.xok
-	$(SHRPENV) $(LDLIBPTH) $(CC) -o perl$(PERL_SUFFIX)dyn$(EXE_EXT) $(PERL_PROFILE_LDFLAGS) $(CLDFLAGS) $(CCDLFLAGS) perlmain$(OBJ_EXT) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
-	$(SHRPENV) $(LDLIBPTH) $(CC) -o perl$(PERL_SUFFIX)$(EXE_EXT) $(PERL_PROFILE_LDFLAGS) $(CLDFLAGS) perlmain$(OBJ_EXT) $(static_ext) $(LLIBPERL) `cat ext.libs` $(libs)
+	$(SHRPENV) $(LDLIBPTH) $(CC) -o perl$(PERL_SUFFIX)dyn$(EXE_EXT) $(PERL_PROFILE_LDFLAGS) $(CLDFLAGS) $(CCDLFLAGS) perlmain$(OBJ_EXT) $(static_real) $(LLIBPERL) `cat ext.libs` $(libs)
+	$(SHRPENV) $(LDLIBPTH) $(CC) -o perl$(PERL_SUFFIX)$(EXE_EXT) $(PERL_PROFILE_LDFLAGS) $(CLDFLAGS) perlmain$(OBJ_EXT) $(static_real) $(LLIBPERL) `cat ext.libs` $(libs)
 
 # Purify/Quantify Perls.
 
@@ -717,16 +730,17 @@ fi
 $spitshell >>$Makefile <<'!NO!SUBS!'
 
 .PHONY: preplibrary
-preplibrary: miniperl $(CONFIGPM) lib/lib.pm $(PREPLIBRARY_LIBPERL)
+# preplibrary: miniperl $(CONFIGPM) lib/lib.pm $(PREPLIBRARY_LIBPERL)
+preplibrary: miniperl $(CONFIGPM) $(PREPLIBRARY_LIBPERL)
 
-.PHONY: makeppport
-makeppport: miniperl$(EXE_EXT) $(CONFIGPM)
-	$(LDLIBPTH) ./miniperl$(EXE_EXT) -Ilib mkppport
+makeppport: miniperl$(EXE_EXT) $(CONFIGPM) $(nonxs_ext)
+	$(LDLIBPTH) ./miniperl$(EXE_EXT) -Ilib -MCross mkppport
 
 $(CROSS_LIB)/Config.pod: config.sh miniperl configpm Porting/Glossary
 	$(LDLIBPTH) ./miniperl -Ilib configpm --cross=$(CROSS_NAME)
 	cp *.h $(CROSS_LIB)/
-	cp ext/re/re.pm $(LIBDIR)/
+# JESS: LIBDIR isnt set here, copying to /re.pm not helpful
+#	cp ext/re/re.pm $(LIBDIR)/
 
 $(CONFIGPM): $(CROSS_LIB)/Config.pod xconfig.h
 
@@ -734,8 +748,11 @@ lib/re.pm: ext/re/re.pm
 	@-rm -f $@
 	cp ext/re/re.pm lib/re.pm
 
-lib/buildcustomize.pl: $(MINIPERL_EXE) write_buildcustomize.pl
-	$(MINIPERL) write_buildcustomize.pl >lib/buildcustomize.pl
+lib/ExtUtils/Miniperl.pm: miniperlmain.c $(MINIPERL_EXE) minimod.pl $(CONFIGPM)
+	./miniperl minimod.pl > lib/ExtUtils/Miniperl.pm
+
+lib/buildcustomize.pl: miniperl write_buildcustomize.pl
+	./miniperl -Ilib -MCross write_buildcustomize.pl >lib/buildcustomize.pl
 
 unidatafiles $(unidatafiles): uni.data
 
@@ -903,17 +920,17 @@ manicheck:	FORCE
 
 
 
-$(DYNALOADER): lib/buildcustomize.pl preplibrary FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl$(EXE_EXT) -Ilib make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS)
+$(DYNALOADER): lib/buildcustomize.pl preplibrary FORCE $(nonxs_ext)
+	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross=$(CROSS_NAME)
 
-d_dummy $(dynamic_ext):	miniperl$(EXE_EXT) lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl$(EXE_EXT) -Ilib make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=dynamic
+d_dummy $(dynamic_ext):	miniperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=dynamic PERLRUN_CROSS=-MCross
 
-s_dummy $(static_ext):	miniperl$(EXE_EXT) lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl$(EXE_EXT) -Ilib make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS)
+s_dummy $(static_ext):	miniperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross
 
-n_dummy $(nonxs_ext):	miniperl$(EXE_EXT) lib/buildcustomize.pl preplibrary $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl$(EXE_EXT) -Ilib make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL)
+n_dummy $(nonxs_ext):	miniperl lib/buildcustomize.pl preplibrary $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) PERLRUN_CROSS=-MCross
 !NO!SUBS!
 
 $spitshell >>$Makefile <<EOF

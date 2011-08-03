@@ -2804,9 +2804,11 @@ cpan/Win32/t/Unicode.t			See if Win32 extension works
 cpan/Win32/Win32.pm			Win32 extension Perl module
 cpan/Win32/Win32.xs			Win32 extension external subroutines
 Cross/build-arm-n770-sh		Cross-compilation
+Cross/build-arm-android-sh	Cross-compilation (Android)
 Cross/cflags-cross-arm		Cross-compilation
 Cross/config			Cross-compilation
 Cross/config.sh-arm-linux	Cross-compilation
+Cross/config.sh-arm-linux-android	Cross-compilation (Android)
 Cross/config.sh-arm-linux-n770	Cross-compilation
 Cross/generate_config_sh	Cross-compilation
 Cross/installperl.patch		Cross-compilation
@@ -2815,6 +2817,7 @@ Cross/Makefile-cross-SH		Cross-compilation
 Cross/Makefile.SH.patch		Cross-compilation
 Cross/README			Cross-compilation
 Cross/README.new		Cross-compilation
+Cross/README.android            Cross-compilation (Android)
 Cross/TODO			Cross-compilation
 Cross/warp			Cross-compilation
 cv.h				Code value header

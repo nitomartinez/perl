@@ -1,9 +1,13 @@
 #!/bin/sh
 
 # Extra warnings, used e.g. for gcc.
-warn="-Wall -ansi   -W -Wextra -Wdeclaration-after-statement -Wendif-labels -Wc++-compat"
+# JESS: remove -ansi, android ndk files have c++ style comments in
+# warn="-Wall -ansi  -W -Wextra -Wdeclaration-after-statement -Wendif-labels -Wc++-compat"
+warn="-Wall   -W -Wextra -Wdeclaration-after-statement -Wendif-labels -Wc++-compat"
 # Extra standardness.
-stdflags=" -std=c89"
+# JESS: remove -std=c89, android ndk files have c++ style comments in
+# stdflags=" -std=c89"
+stdflags=""
 # Extra extra.
 extra=""
 
