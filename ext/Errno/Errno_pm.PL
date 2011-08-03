@@ -142,6 +142,19 @@ sub get_files {
 	      $Config{gccversion} !~ /intel/i
 	      # might be using, say, Intel's icc
 	     ) {
+#        print STDERR "CC: $Config{cc} CCNAME: $Config{ccname}\n";
+        if ($Config{cc} eq 'agcc') {
+
+            ## Added by Jess for Android NDK
+            ## $ENV{ANDROID_NDK} is laziness, how else should we find it?
+            if(exists $ENV{ANDROID_NDK}) {
+#                print STDERR "Found DROID: $ENV{ANDROID_NDK}\n";
+                my $android_errno_h = "$ENV{ANDROID_NDK}/platforms/android-9/arch-arm/usr/include/errno.h";
+                if(-e $android_errno_h ) {
+                    $file{$android_errno_h} = 1;
+                }
+            }
+        }
 	# Some Linuxes have weird errno.hs which generate
 	# no #file or #line directives
 	my $linux_errno_h = -e '/usr/include/errno.h' ?
