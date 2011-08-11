@@ -77,19 +77,37 @@ if [[ "x$1" != xnoconf* ]] ; then
   esac
   cleanup
   # Configure on HOST
-  ./Configure -des -Dprefix=./dummy -Dusedevel || exit 1
+
+  if [[ "x$1" != xmicroperl* ]] ; then
+    ./Configure -des -Dprefix=./dummy -Dusedevel || exit 1
+  fi
 fi
 
 # miniperl on HOST
 cp -f Cross/config.sh-arm-linux-android Cross/config-${CROSS_NAME}.sh
 
 echo "[building for host]"
-make miniperl
-make uudmap.h
-make git_version.h
+if [[ "x$1" != xmicroperl* ]] ; then
+  make miniperl
+  MPERL=./miniperl
+fi
+if [[ "x$1" == xmicroperl* ]] ; then
+  make -f Makefile.micro
+  MPERL=./microperl
+fi
+
+if [[ "x$1" != xmicroperl* ]] ; then
+  make uudmap.h
+  make git_version.h
+fi
+if [[ "x$1" == xmicroperl* ]] ; then
+#  make -f Makefile.micro uudmap.h
+  make -f Makefile.micro git_version.h
+fi
 
 # Config.pm etc for target arch?
-./miniperl -Ilib configpm --cross=arm
+${MPERL} -Ilib configpm --cross=arm
+##J ./miniperl -Ilib configpm --cross=arm
 
 # JESS: lib/re.pm, lib/lib.pm sorted elsewhere
 # make lib/re.pm lib/lib.pm
@@ -119,6 +137,7 @@ done
 rm -f cflags-cross-$CROSS_NAME
 cp Cross/cflags-cross-$CROSS_NAME .
 rm -f Makefile-cross-$CROSS_NAME
+# CROSS_NAME=$CROSS_NAME sh Makefile.SH
 CROSS_NAME=$CROSS_NAME sh Cross/Makefile-cross-SH
 cp -f Cross/Makefile-cross-$CROSS_NAME .
 cp -f Makefile-cross-$CROSS_NAME makefile
@@ -138,9 +157,11 @@ AR=${CCPREF}ar
 MAKEFILE=Makefile-cross-$CROSS_NAME
 make -f ${MAKEFILE} xconfig.h || exit 1
 make -f ${MAKEFILE} libperl.a OBJ_EXT=.${CROSS_NAME}o LIB_EXT=.${CROSS_NAME}a AR=${AR} || exit 1
+
 # make -f ${MAKEFILE} libperl.a OBJ_EXT=.o EXE_EXT= LIB_EXT=.a AR=${AR} || exit 1
 # make -f ${MAKEFILE} libperl.a OBJ_EXT=.o EXE_EXT=.$CROSS_NAME LIB_EXT=.a AR=${AR} || exit 1
 # make -f ${MAKEFILE} miniperl.${CROSS_NAME} FIRSTMAKEFILE=${MAKEFILE} MAKEFILE=${MAKEFILE} AR=${AR} || exit 1
+
 echo "[building perl.${CROSS_NAME}]"
 make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.${CROSS_NAME}o LIB_EXT=.${CROSS_NAME}a AR=${AR} || exit 1
 # make -f ${MAKEFILE} ext/Errno/pm_to_blib || exit 1

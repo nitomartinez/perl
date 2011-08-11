@@ -272,6 +272,11 @@ LIB_EXT = $_a
 OBJ_EXT = $_o
 PATH_SEP = $p_
 
+# Macros to invoke a copy of miniperl during the build.  Targets which
+# are built using these macros should depend on \$(MINIPERL_EXE)
+MICROPERL_EXE = microperl\$(EXE_EXT)
+MICROPERL = \$(LDLIBPTH) \$(RUN) ./microperl\$(EXE_EXT) -Ilib
+
 # If you're going to use valgrind and it can't be invoked as plain valgrind
 # then you'll need to change this, or override it on the make command line.
 VALGRIND=valgrind
@@ -435,7 +440,7 @@ splintfiles = $(c1)
 .c.s:
 	$(CCCMDSRC) -S $*.c
 
-all: $(FIRSTMAKEFILE) miniperl$(EXE_EXT) extra.pods $(private) $(unidatafiles) $(public) $(dynamic_ext) $(nonxs_ext) extras.make
+all: $(FIRSTMAKEFILE) microperl$(EXE_EXT) extra.pods $(private) $(unidatafiles) $(public) $(dynamic_ext) $(nonxs_ext) extras.make
 	@echo " ";
 	@echo "	Everything is up to date. Type '$(MAKE) test' to run test suite."
 
@@ -472,7 +477,7 @@ miniperlmain$(OBJ_EXT): miniperlmain.c patchlevel.h
 	$(CCCMD) $(PLDLFLAGS) $*.c
 
 perlmain.c: miniperlmain.c config.sh $(MAKEFILE) lib/ExtUtils/Miniperl.pm
-	./miniperl -Ilib -MExtUtils::Miniperl -e 'writemain(@ARGV)' DynaLoader $(static_ext) > perlmain.c
+	$(MICROPERL) -MExtUtils::Miniperl -e 'writemain(@ARGV)' DynaLoader $(static_ext) > perlmain.c
 
 
 !NO!SUBS!
@@ -731,13 +736,13 @@ $spitshell >>$Makefile <<'!NO!SUBS!'
 
 .PHONY: preplibrary
 # preplibrary: miniperl $(CONFIGPM) lib/lib.pm $(PREPLIBRARY_LIBPERL)
-preplibrary: miniperl $(CONFIGPM) $(PREPLIBRARY_LIBPERL)
+preplibrary: microperl$(EXE_EXT) $(CONFIGPM) $(PREPLIBRARY_LIBPERL)
 
-makeppport: miniperl$(EXE_EXT) $(CONFIGPM) $(nonxs_ext)
-	$(LDLIBPTH) ./miniperl$(EXE_EXT) -Ilib -MCross mkppport
+makeppport: microperl$(EXE_EXT) $(CONFIGPM) $(nonxs_ext)
+	$(LDLIBPTH) $(MICROPERL) -MCross mkppport
 
-$(CROSS_LIB)/Config.pod: config.sh miniperl configpm Porting/Glossary
-	$(LDLIBPTH) ./miniperl -Ilib configpm --cross=$(CROSS_NAME)
+$(CROSS_LIB)/Config.pod: config.sh microperl$(EXE_EXT) configpm Porting/Glossary
+	$(LDLIBPTH) $(MICROPERL) configpm --cross=$(CROSS_NAME)
 	cp *.h $(CROSS_LIB)/
 # JESS: LIBDIR isnt set here, copying to /re.pm not helpful
 #	cp ext/re/re.pm $(LIBDIR)/
@@ -749,10 +754,10 @@ lib/re.pm: ext/re/re.pm
 	cp ext/re/re.pm lib/re.pm
 
 lib/ExtUtils/Miniperl.pm: miniperlmain.c $(MINIPERL_EXE) minimod.pl $(CONFIGPM)
-	./miniperl minimod.pl > lib/ExtUtils/Miniperl.pm
+	$(MICROPERL) minimod.pl > lib/ExtUtils/Miniperl.pm
 
-lib/buildcustomize.pl: miniperl write_buildcustomize.pl
-	./miniperl -Ilib -MCross write_buildcustomize.pl >lib/buildcustomize.pl
+lib/buildcustomize.pl: microperl$(EXE_EXT) write_buildcustomize.pl
+	$(MICROPERL) -MCross write_buildcustomize.pl >lib/buildcustomize.pl
 
 unidatafiles $(unidatafiles): uni.data
 
@@ -788,7 +793,7 @@ extras.install: perl$(EXE_EXT)
 	no-install install.perl install.man install.html
 
 META.yml:	Porting/makemeta Porting/Maintainers.pl Porting/Maintainers.pm
-	$(LDLIBPTH) ./miniperl -Ilib Porting/makemeta
+	$(LDLIBPTH) $(MICROPERL) Porting/makemeta
 
 install-strip:
 	$(MAKE) STRIPFLAGS=-s install DESTDIR="$(DESTDIR)"
@@ -921,16 +926,16 @@ manicheck:	FORCE
 
 
 $(DYNALOADER): lib/buildcustomize.pl preplibrary FORCE $(nonxs_ext)
-	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross=$(CROSS_NAME)
+	@$(LDLIBPTH) $(RUN) $(MICROPERL) -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross=$(CROSS_NAME)
 
-d_dummy $(dynamic_ext):	miniperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=dynamic PERLRUN_CROSS=-MCross
+d_dummy $(dynamic_ext):	microperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) $(MICROPERL) -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=dynamic PERLRUN_CROSS=-MCross
 
-s_dummy $(static_ext):	miniperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross
+s_dummy $(static_ext):	microperl lib/buildcustomize.pl preplibrary makeppport $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) $(MICROPERL) -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) LINKTYPE=static $(STATIC_LDFLAGS) PERLRUN_CROSS=-MCross
 
-n_dummy $(nonxs_ext):	miniperl lib/buildcustomize.pl preplibrary $(DYNALOADER) FORCE
-	@$(LDLIBPTH) $(RUN) ./miniperl -Ilib -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) PERLRUN_CROSS=-MCross
+n_dummy $(nonxs_ext):	microperl lib/buildcustomize.pl preplibrary $(DYNALOADER) FORCE
+	@$(LDLIBPTH) $(RUN) $(MICROPERL) -MCross make_ext.pl --cross $@ MAKE=$(MAKE) LIBPERL_A=$(LIBPERL) PERLRUN_CROSS=-MCross
 !NO!SUBS!
 
 $spitshell >>$Makefile <<EOF

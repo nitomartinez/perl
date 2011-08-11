@@ -137,7 +137,7 @@
  *	This symbol, if defined, indicates that the flock routine is
  *	available to do file locking.
  */
-/*#define HAS_FLOCK		/ **/
+#define HAS_FLOCK		/**/
 
 /* HAS_FORK:
  *	This symbol, if defined, indicates that the fork routine is
@@ -657,7 +657,7 @@
 /* I_FCNTL:
  *	This manifest constant tells the C program to include <fcntl.h>.
  */
-/*#define I_FCNTL	/ **/
+#define I_FCNTL	/**/
 
 /* I_FLOAT:
  *	This symbol, if defined, indicates to the C program that it should
@@ -4473,7 +4473,7 @@
  *	used in a fully backward compatible manner.
  */
 #ifndef USE_PERLIO
-/*#define	USE_PERLIO		/ **/
+#define	USE_PERLIO		/**/
 #endif
 
 /* USE_SOCKS:
@@ -4684,8 +4684,3 @@
 #define Uid_t int		/* UID type */
 
 #endif
-
-/* Generated from:
- * 323778627146f2762cd41f4dd1db6659f59006ec9bcaaf6bcc645d0380dda938 config_h.SH
- * 0af1263ef6eca52a40334d5df3744c198c20b7f8d4b087dbf445e2e387459eeb uconfig.sh
- * ex: set ro: */

@@ -3,7 +3,7 @@ CCFLAGS = -c
 DEFINES = -DPERL_CORE -DPERL_MICRO -DSTANDARD_C -DPERL_USE_SAFE_PUTENV \
 	  -DNO_MATHOMS
 OPTIMIZE = 
-CFLAGS = $(DEFINES) $(OPTIMIZE)
+CFLAGS = $(DEFINES) $(OPTIMIZE) -DPERL_IS_MINIPERL
 LDFLAGS = 
 LIBS = -lm
 _O = .o
@@ -193,3 +193,13 @@ microtest: microperl
 	  && ./perl TEST base/*.t cmd/*.t
 
 # That's it, folks!
+
+##J - needed for cross-compiles
+# Both git_version.h and lib/Config_git.pl are built
+# by make_patchnum.pl.
+
+git_version.h: lib/Config_git.pl
+
+lib/Config_git.pl: $(MINIPERL_EXE) make_patchnum.pl
+	./microperl -Ilib make_patchnum.pl
+
