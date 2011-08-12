@@ -147,21 +147,21 @@ sub c_o {
 	$command -S $flags \$*.c
 
 .c\$(OBJ_EXT):
-	$command $flags \$*.c -o \$*\$(OBJ_EXT)
+	$command $flags \$*.c
 
 .cpp\$(OBJ_EXT):
-	$command $flags \$*.cpp -o \$*\$(OBJ_EXT)
+	$command $flags \$*.cpp
 
 .cxx\$(OBJ_EXT):
-	$command $flags \$*.cxx -o \$*\$(OBJ_EXT)
+	$command $flags \$*.cxx
 
 .cc\$(OBJ_EXT):
-	$command $flags \$*.cc -o \$*\$(OBJ_EXT)
+	$command $flags \$*.cc
 };
 
     push @m, qq{
 .C\$(OBJ_EXT):
-	$command $flags \$*.C -o \$*\$(OBJ_EXT)
+	$command $flags \$*.C
 } if !$Is{OS2} and !$Is{Win32} and !$Is{Dos}; #Case-specific
 
     return join "", @m;
@@ -393,9 +393,9 @@ sub constants {
               PERL            FULLPERL          ABSPERL
               PERLRUN         FULLPERLRUN       ABSPERLRUN
               PERLRUNINST     FULLPERLRUNINST   ABSPERLRUNINST
-              PERLRUN_CROSS
               PERL_CORE
               PERM_DIR PERM_RW PERM_RWX
+              PERLRUN_CROSS
 
 	      ) ) 
     {
@@ -1932,11 +1932,11 @@ sub init_PERL {
 
         # Make sure perl can find itself before it's installed.
         if ($self->{UNINSTALLED_PERL} || $self->{PERL_CORE}) {
-            $self->{$run} .= q{ "-I$(PERL_LIB)" };
-            $self->{$run} .= q{ "$(PERLRUN_CROSS)" } if($self->{PERLRUN_CROSS});
-            $self->{$run} .= q{ "-I$(PERL_ARCHLIB)" }; 
+            $self->{$run} .= q{ "-I$(PERL_LIB)"};
+            $self->{$run} .= q{ "$(PERLRUN_CROSS)" } if $self->{PERLRUN_CROSS};
+            $self->{$run} .= q{ "-I$(PERL_ARCHLIB)"};
         }
-        
+
         $self->{$perl.'RUNINST'} = 
           sprintf q{$(%sRUN) "-I$(INST_ARCHLIB)" "-I$(INST_LIB)"}, $perl;
     }
@@ -3627,7 +3627,7 @@ sub xs_o {	# many makes are too dumb to use xs_c then c_o
     '
 .xs$(OBJ_EXT):
 	$(XSUBPPRUN) $(XSPROTOARG) $(XSUBPPARGS) $*.xs > $*.xsc && $(MV) $*.xsc $*.c
-	$(CCCMD) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.c -o $*$(OBJ_EXT)
+	$(CCCMD) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.c
 ';
 }
 

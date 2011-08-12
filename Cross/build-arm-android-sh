@@ -156,15 +156,11 @@ AR=${CCPREF}ar
 
 MAKEFILE=Makefile-cross-$CROSS_NAME
 make -f ${MAKEFILE} xconfig.h || exit 1
-make -f ${MAKEFILE} libperl.a OBJ_EXT=.${CROSS_NAME}o LIB_EXT=.${CROSS_NAME}a AR=${AR} || exit 1
+make -f ${MAKEFILE} libperl.a OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
 
-# make -f ${MAKEFILE} libperl.a OBJ_EXT=.o EXE_EXT= LIB_EXT=.a AR=${AR} || exit 1
-# make -f ${MAKEFILE} libperl.a OBJ_EXT=.o EXE_EXT=.$CROSS_NAME LIB_EXT=.a AR=${AR} || exit 1
-# make -f ${MAKEFILE} miniperl.${CROSS_NAME} FIRSTMAKEFILE=${MAKEFILE} MAKEFILE=${MAKEFILE} AR=${AR} || exit 1
 
 echo "[building perl.${CROSS_NAME}]"
-make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.${CROSS_NAME}o LIB_EXT=.${CROSS_NAME}a AR=${AR} || exit 1
-# make -f ${MAKEFILE} ext/Errno/pm_to_blib || exit 1
+make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
 
 echo
 

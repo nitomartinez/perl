@@ -46,12 +46,14 @@ case $# in
 0) set *.c; echo "The current C flags are:" ;;
 esac
 
-set `echo "$* " | sed -e 's/\.[oc] / /g' -e "s/\.${CROSS_NAME}o / /g" -e 's/\.obj / /g' -e "s/\\$obj_ext / /g"`
+set `echo "$* " | sed -e 's/\.[oc] / /g' -e "s/\.o / /g" -e 's/\.obj / /g' -e "s/\\$obj_ext / /g"`
+# set `echo "$* " | sed -e 's/\.[oc] / /g' -e "s/\.${CROSS_NAME}o / /g" -e 's/\.obj / /g' -e "s/\\$obj_ext / /g"`
 
 for file do
 
     case "$#" in
-    1) extra="-o $file.${CROSS_NAME}o $extra";;
+    1) extra="-o $file.o $extra";;
+#    1) extra="-o $file.${CROSS_NAME}o $extra";;
     *) echo $n "    $file.c	$c" ;;
     esac
 
