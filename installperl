@@ -52,6 +52,12 @@ my $exe_ext = $Config{exe_ext};
 # Allow "make install PERLNAME=something_besides_perl":
 my $perl = defined($ENV{PERLNAME}) ? $ENV{PERLNAME} : 'perl';
 
+if($::Cross::platform) {
+    ## Installing a set of cross-compiled perl libs for later module compiling use, we just keep microperl
+    ## Would use PERLNAME but we're running with microperl too, and no ENV support!
+    $perl = 'microperl';
+}
+
 # This is the base used for versioned names, like "perl5.6.0".
 # It's separate because a common use of $PERLNAME is to install
 # perl as "perl5", if that's used as base for versioned files you
@@ -331,7 +337,7 @@ elsif ($^O eq 'mpeix') {
 elsif ($^O ne 'dos') {
     if (!$Is_NetWare) {
 	safe_unlink("$installbin/$perl_verbase$ver$exe_ext");
-	copy("perl$exe_ext", "$installbin/$perl_verbase$ver$exe_ext");
+	copy("$perl$exe_ext", "$installbin/$perl_verbase$ver$exe_ext");
 	strip("$installbin/$perl_verbase$ver$exe_ext");
 	chmod(0755, "$installbin/$perl_verbase$ver$exe_ext");
     }
