@@ -619,8 +619,8 @@ $(LIBPERL): $& $(obj) $(DYNALOADER) $(LIBPERLEXPORT)
 	$spitshell >>$Makefile <<'!NO!SUBS!'
 
 perl.$(CROSS_NAME): perl$(EXE_EXT)
-	mv perl$(EXE_EXT) perl.$(CROSS_NAME)
-	echo "[built perl$(CROSS_NAME)]"
+	# mv perl$(EXE_EXT) perl.$(CROSS_NAME)
+	echo "[built perl]"
 
 perl$(EXE_EXT): $& perlmain$(OBJ_EXT) $(LIBPERL) $(static_ext) ext.libs $(PERLEXPORT)
 	-@rm -f miniperl.xok
