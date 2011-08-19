@@ -106,7 +106,6 @@ if [[ "x$1" == xmicroperl* ]] ; then
 fi
 
 # Config.pm etc for target arch?
-${MPERL} -Ilib configpm --cross=arm
 ##J ./miniperl -Ilib configpm --cross=arm
 
 # JESS: lib/re.pm, lib/lib.pm sorted elsewhere
@@ -114,10 +113,30 @@ ${MPERL} -Ilib configpm --cross=arm
 
 # do the rest for TARGET
 
+echo "[setting up for target]"
+
+HOST_PATH=$PWD
+mkdir xcompile
+cd xcompile
+echo "running: $HOST_PATH/Configure -Dmksymlinks -des -Dusedevel"
+$HOST_PATH/Configure -Dmksymlinks -des -Dusedevel
+
+## Need to repeat this copy in the xcompile dir
+cp -f Cross/config.sh-arm-linux-android Cross/config-${CROSS_NAME}.sh
+cp -f $HOST_PATH/lib/Config_git.pl ./lib
+${HOST_PATH}/${MPERL} -Ilib configpm --cross=arm
+
+cp -f $HOST_PATH/git_version.h .
+cp -f $HOST_PATH/uudmap.h .
+cp -f $HOST_PATH/bitcount.h .
+cp -f $HOST_PATH/mg_data.h .
+
+
 echo "[building for target]"
 
 export CROSSCC
 export CROSS_NAME
+export HOST_PATH 
 
 $CROSSCC --version
 
@@ -164,7 +183,7 @@ make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.
 
 echo
 
-ls -l perl.${CROSS_NAME}
+ls -l perl
 
 echo
 echo "[android build done]"
