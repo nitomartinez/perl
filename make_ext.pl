@@ -270,7 +270,7 @@ sub build_extension {
     my $up = $ext_dir;
     $up =~ s![^/]+!..!g;
 
-    $perl ||= "$up/$^X";
+    $perl ||= ( -f $^X ? $^X :"$up/$^X" );
 ##J    $perl ||= "$up/miniperl";
     my $return_dir = $up;
     my $lib_dir = "$up/lib";
