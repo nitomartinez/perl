@@ -362,7 +362,11 @@ mkpath($installarchlib, $opts{verbose}, 0777);
 mkpath($installsitelib, $opts{verbose}, 0777) if ($installsitelib);
 mkpath($installsitearch, $opts{verbose}, 0777) if ($installsitearch);
 
-if (chdir "lib") {
+my @libdirs = qw/lib/;
+push @libdirs, "xlib/$::Cross::platform" if($::Cross::platform);
+
+foreach my $libdir (@libdirs) {
+  if (chdir $libdir) {
     $do_installarchlib = ! samepath($installarchlib, '.');
     $do_installprivlib = ! samepath($installprivlib, '.');
     $do_installprivlib = 0 if $versiononly && !($installprivlib =~ m/\Q$vershort/);
@@ -371,11 +375,11 @@ if (chdir "lib") {
 	find(\&installlib, '.');
     }
     chdir ".." || die "Can't cd back to source directory: $!\n";
-}
-else {
+  }
+  else {
     warn "Can't cd to lib to install lib files: $!\n";
+  }
 }
-
 # Install header files and libraries.
 mkpath("$installarchlib/CORE", $opts{verbose}, 0777);
 my @corefiles;

@@ -131,6 +131,7 @@ cp -f $HOST_PATH/uudmap.h .
 cp -f $HOST_PATH/bitcount.h .
 cp -f $HOST_PATH/mg_data.h .
 
+ln -s $HOST_PATH/${MPERL} .
 
 echo "[building for target]"
 
