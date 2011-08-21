@@ -19,9 +19,6 @@ use vars qw($Is_VMS $Is_W32 $Is_OS2 $Is_Cygwin $Is_Darwin $Is_NetWare
 	    %opts $packlist);
 my ($dostrip, $versiononly, $force,
     $otherperls, $archname, $nwinstall, $nopods);
-# Not sure how easy it would be to refactor to remove the need for local $depth
-# below
-use vars qw /$depth/;
 
 BEGIN {
     if ($Is_VMS) { eval 'use VMS::Filespec;' }
@@ -704,7 +701,6 @@ sub copy {
 sub installlib {
     my $dir = $File::Find::dir;
     $dir =~ s#^\.(?![^/])/?##;
-    local($depth) = $dir ? "lib/$dir" : "lib";
 
     my $name = $_;
 
@@ -853,7 +849,8 @@ sub copy_if_diff {
     if ($force || compare($from, $to) || $opts{notify}) {
 	safe_unlink($to);   # In case we don't have write permissions.
 	if ($opts{notify}) {
-	    $from = $depth . "/" . $from if $depth;
+            ## For debugging output, make from contain entire path.. 
+	    $from = cwd() . "/" . $from if($from !~ m{^/});
 	}
 	if ($perlpodbadsymlink && $from =~ m!^pod/perl(.+)\.pod$!) {
 	    $from = "README.$1";
