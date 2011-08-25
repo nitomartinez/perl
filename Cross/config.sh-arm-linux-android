@@ -4,12 +4,15 @@
 # definitions figured out by Configure. Should you modify one of these values,
 # do not forget to propagate your changes by running "Configure -der". You may
 # instead choose to run each of the .SH files by yourself, or "Configure -S".
+# 25-10-2011 Nito@Qindel.ES --Manually edited looking at
+#            http://www.netmite.com/android/mydroid/bionic/libc/SYSCALLS.TXT
+#            /usr/local/android-ndk/platforms/android-3/arch-x86/usr/include
 #
 
 # Package name      : perl5
 # Source directory  : .
-# Configuration time: Fri Feb 29 00:00:00 EDT 2108
-# Configured by     : jhi
+# Configuration time: Thu Aug 25 08:31:26 UTC 2011
+# Configured by     : nito
 # Target system     : linux android arm-eabi
 
 Author=''
@@ -32,14 +35,14 @@ alignbytes='4'
 ansi2knr=''
 aphostname='/bin/hostname'
 api_revision='5'
-api_subversion='0'
+api_subversion='1'
 api_version='15'
-api_versionstring='5.15.0'
+api_versionstring='5.15.1'
 ar='ar'
 archlib='/data/data/com.googlecode.perlforandroid/files/perl/5.15.0/arm-eabi-linux'
 archlibexp='/data/data/com.googlecode.perlforandroid/files/perl/5.15.0/arm-eabi-linux'
 archname64=''
-archname='arm-eabi-linux'
+archname='arm-linux-androideabi'
 archobjs=''
 asctime_r_proto='0'
 awk='awk'
@@ -576,7 +579,7 @@ fpossize='16'
 fpostype='fpos_t'
 freetype='void'
 from=':'
-full_ar='arm-eabi-ar'
+full_ar='arm-linux-androideabi-ar'
 full_csh='/bin/csh'
 full_sed='/bin/sed'
 gccansipedantic=''
