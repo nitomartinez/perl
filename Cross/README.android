@@ -12,7 +12,7 @@ This file describes how to cross-compile a copy of perl for Android, using the A
 
 =item Android NDK, tested using: 
 
-L<http://dl.google.com/android/ndk/android-ndk-r5c-linux-x86.tar.bz2>
+L<http://dl.google.com/android/ndk/android-ndk-r6-linux-x86.tar.bz2>
 
 =item Android SDK, tested using:
 
@@ -20,20 +20,32 @@ L<http://dl.google.com/android/android-sdk_r11-linux_x86.tgz>
 
 =item agcc, script to simplfy calling the arm-gcc
 
-There is a copy modified for NDK v5c and SDK r11 in the Cross/ directory. 
+There is a copy modified for NDK v6 in https://github.com/nitomartinez/agcc
 
 =item Environment variables:
 
-export ANDROID_NDK=<path_to_ndk>
-export PATH=$PATH:<path_to_agcc>:<path_to_sdk>/ase_src/tools:<path_to_ndk>/toolchains/arm-eabi-4.4.0/prebuilt/linux-x86/bin
+ export ANDROID_SDK=<path_to_sdk>
+ export ANDROID_NDK=<path_to_ndk>
+ export PATH=$PATH:<path_to_agcc>:<path_to_sdk>/tools:<path_to_ndk>/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
 
 eg:
 
-    export ANDROID_NDK=/usr/src/android/android-ndk-r5c
-    export PATH=$PATH:/home/castaway/bin:/usr/src/android/android-sdk-linux_x86/ase_src/tools:/usr/src/android/android-ndk-r5c/toolchains/arm-eabi-4.4.0/prebuilt/linux-x86/bin
+ export ANDROID_NDK=/usr/local/android-ndk
+ export ANDROID_SDK=/usr/local/android-sdk
+ export PATH=$PATH:$ANDROID_SDK/tools:$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin
+
+
 
 =back
 
 =head2 Running
 
     sh build-arm-android-sh
+
+=head2 Installing
+
+
+    cd xcompile   
+    make -f Makefile-cross-arm install.perl DESTDIR=/tmp/perl  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
+    cd /tmp/perl
+    adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl

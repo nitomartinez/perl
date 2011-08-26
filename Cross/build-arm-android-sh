@@ -61,7 +61,7 @@ agcc_test () {
 }
 
 CROSS_NAME=arm
-CCPREF=arm-eabi-
+CCPREF=arm-linux-androideabi-
 CROSSCC=agcc
 
 if [[ "x$1" != xnoconf* ]] ; then
