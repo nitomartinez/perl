@@ -168,6 +168,22 @@ $this_target: uni.data" ;;
     esac
 done
 
+dynamic_real=' '
+for f in $dynamic_ext; do
+    : the dependency named here will never exist
+      base=`echo "$f" | sed 's/.*\///'`
+    this_target="${CROSS_LIB}/auto/$f/$base.$dlext"  
+    dynamic_real="$dynamic_real $this_target"
+
+    : Parallel makes reveal that we have some interdependencies
+    case $f in
+	Math/BigInt/FastCalc) extra_dep="$extra_dep
+$this_target: ${CROSS_LIB}/auto/List/Util/Util.$dlext" ;;
+	Unicode/Normalize) extra_dep="$extra_dep
+$this_target: uni.data" ;;
+    esac
+done
+
 static_list=' '
 for f in $static_ext; do
 	base=`echo "$f" | sed 's/.*\///'`
@@ -247,6 +263,7 @@ STATIC_LDFLAGS = $static_ldflags
 LDLIBPTH = $ldlibpth
 
 dynamic_ext = $dynamic_list
+dynamic_real = $dynamic_real
 static_ext = $static_list
 static_real = $static_real
 nonxs_ext = $nonxs_list
@@ -447,8 +464,18 @@ all: $(FIRSTMAKEFILE) $(MINIPERL_EXE) extra.pods $(private) $(unidatafiles) $(pu
 	@echo " ";
 	@echo "	Everything is up to date. Type '$(MAKE) test' to run test suite."
 
-.PHONY: all
+.PHONY: all translators utilities
 
+translators:	$(MINIPERL_EXE) $(CONFIGPM) $(dynamic_ext)
+	@echo " "; echo "	Making x2p stuff"; cd x2p; $(LDLIBPTH) $(MAKE) all
+
+x2p/s2p: $(MINIPERL_EXE) $(CONFIGPM) $(dynamic_ext)
+	$(TOADB) x2p
+	cd x2p; $(LDLIBPTH) $(MAKE) s2p
+	$(FROMADB) x2p
+
+utilities:	$(MINIPERL_EXE) $(CONFIGPM) $(dynamic_ext) FORCE
+	@echo " "; echo "	Making utilities"; cd utils; $(LDLIBPTH) $(MAKE) all
 
 # This is now done by installman only if you actually want the man pages.
 #	@echo " "; echo "	Making docs"; cd pod; $(MAKE) all;

@@ -40,6 +40,7 @@ eg:
 
 =head2 Running
 
+    cd Cross
     sh build-arm-android-sh
 
 =head2 Installing
@@ -47,5 +48,28 @@ eg:
 
     cd xcompile   
     make -f Makefile-cross-arm install.perl DESTDIR=/tmp/perl  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
+    cp libperl.so $DESTDIR/data/data/com.theqvd.android.perl/lib
+
     cd /tmp/perl
     adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl
+
+=head2 Testing
+
+    adb shell
+    root@android:/data/data/com.theqvd.android.perl/bin # export LD_LIBRARY_PATH=/data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/CORE:/data/data/com.theqvd.android.perl
+    root@android:/data/data/com.theqvd.android.perl/bin # ./perl -e 'print "hello world\n"'
+
+
+=head2 Errors
+
+Currently no linking with dynamic modules
+
+    root@android:/data/data/com.theqvd.android.perl/bin #  ./perl -MMIME::Base64   
+Can't load '/data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/auto/MIME/Base64/Base64.so' for module MIME::Base64: Cannot load library: reloc_library[1315]:   408 cannot locate 'Perl_sv_setiv'...
+ at /data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/MIME/Base64.pm line 14
+Compilation failed in require.
+BEGIN failed--compilation aborted.
+255|root@android:/data/data/com.theqvd.android.perl/bin # 
+
+    root@android:/data/data/com.theqvd.android.perl/bin # export LD_PRELOAD=/data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/CORE/libperl.so
+    root@android:/data/data/com.theqvd.android.perl/bin # ./perl -MMIME::Base64 -e 'print encode_base64("Hello World!")."\n";'

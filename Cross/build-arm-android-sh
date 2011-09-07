@@ -130,6 +130,7 @@ cp -f $HOST_PATH/git_version.h .
 cp -f $HOST_PATH/uudmap.h .
 cp -f $HOST_PATH/bitcount.h .
 cp -f $HOST_PATH/mg_data.h .
+cp -f $HOST_PATH/utils.lst .
 
 ln -s $HOST_PATH/${MPERL} .
 
@@ -176,15 +177,22 @@ AR=${CCPREF}ar
 
 MAKEFILE=Makefile-cross-$CROSS_NAME
 make -f ${MAKEFILE} xconfig.h || exit 1
-make -f ${MAKEFILE} libperl.a OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
+make -f ${MAKEFILE} libperl.so OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
 
 
 echo "[building perl.${CROSS_NAME}]"
-make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
+make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.a AR=${AR} LIBPERL=libperl.so || exit 1
+
+echo "[building utilities]"
+make -f ${MAKEFILE} utilities MAKEFILE=${MAKEFILE} PERL="${HOST_PATH}/${MPERL} -MCross" || exit 1
 
 echo
 
 ls -l perl
+
+cd x2p
+make depend PERL="${HOST_PATH}/${MPERL} -MCross" CC=agcc LDFLAGS= libs="-ldl -lc -lm"
+make all PERL="${HOST_PATH}/${MPERL} -MCross" CC=agcc LDFLAGS= libs="-ldl -lc -lm"
 
 echo
 echo "[android build done]"

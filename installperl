@@ -364,7 +364,7 @@ mkpath($installsitearch, $opts{verbose}, 0777) if ($installsitearch);
 
 my @libdirs = qw/lib/;
 push @libdirs, "xlib/$::Cross::platform" if($::Cross::platform);
-
+my $curdir = getcwd();
 foreach my $libdir (@libdirs) {
   if (chdir $libdir) {
     $do_installarchlib = ! samepath($installarchlib, '.');
@@ -374,7 +374,7 @@ foreach my $libdir (@libdirs) {
     if ($do_installarchlib || $do_installprivlib) {
 	find(\&installlib, '.');
     }
-    chdir ".." || die "Can't cd back to source directory: $!\n";
+    chdir $curdir || die "Can't cd back to source directory: $!\n";
   }
   else {
     warn "Can't cd to lib to install lib files: $!\n";
