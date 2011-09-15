@@ -38,7 +38,7 @@ eg:
 
 =back
 
-=head2 Running
+=head2 Compiling
 
     cd Cross
     sh build-arm-android-sh
@@ -48,7 +48,6 @@ eg:
 
     cd xcompile   
     make -f Makefile-cross-arm install.perl DESTDIR=/tmp/perl  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
-    cp libperl.so $DESTDIR/data/data/com.theqvd.android.perl/lib
 
     cd /tmp/perl
     adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl
@@ -60,16 +59,17 @@ eg:
     root@android:/data/data/com.theqvd.android.perl/bin # ./perl -e 'print "hello world\n"'
 
 
-=head2 Errors
+=head2 compilation time
 
-Currently no linking with dynamic modules
+In a two core 2.5GHz computer I compile perl in:
 
-    root@android:/data/data/com.theqvd.android.perl/bin #  ./perl -MMIME::Base64   
-Can't load '/data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/auto/MIME/Base64/Base64.so' for module MIME::Base64: Cannot load library: reloc_library[1315]:   408 cannot locate 'Perl_sv_setiv'...
- at /data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/MIME/Base64.pm line 14
-Compilation failed in require.
-BEGIN failed--compilation aborted.
-255|root@android:/data/data/com.theqvd.android.perl/bin # 
+ real	7m41.095s
+user	4m16.840s
+sys	0m30.440s
 
-    root@android:/data/data/com.theqvd.android.perl/bin # export LD_PRELOAD=/data/data/com.theqvd.android.perl/lib/5.15.1/arm-linux-androideabi/CORE/libperl.so
-    root@android:/data/data/com.theqvd.android.perl/bin # ./perl -MMIME::Base64 -e 'print encode_base64("Hello World!")."\n";'
+=head2 NOTES
+
+Android linker does not allow to use symbols from the main executable in any of the libraries.
+This forces us to build a libperl.so. To preload this library we create a perl shell script
+wrapper that sets LD_PRELOAD to the libper.so file.
+

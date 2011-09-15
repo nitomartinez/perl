@@ -447,6 +447,20 @@ if (! $versiononly && ! samepath($installbin, '.') && ($^O ne 'dos') && ! $Is_VM
 	# VOS doesn't support hard links, so use a symlink.
 	symlink("$installbin/$perl_verbase$ver$exe_ext",
 		"$installbin/$perl$exe_ext");
+    } elsif ($Config{osname} eq 'android') {
+	# Remove from and get script with LD_LiBRARY_PATH and LD_PRELOAD in place
+	open my $androidperlscript, ">", "$installbin/$perl$exe_ext"
+	    or die "Cannot open $installbin/$perl$exe_ext: $!";
+	print $androidperlscript  <<EOF ;
+#!$Config{sh}
+export LD_PRELOAD=$Config{installarchlib}/CORE/libperl.so
+eval 'exec $Config{installbin}/$perl_verbase$ver$exe_ext \${1+"\$@"}'
+     	   if \$running_under_some_shell;
+EOF
+	close $androidperlscript
+	    or die "Cannot close $installbin/$perl$exe_ext: $!";
+	chmod(0755, "$installbin/$perl$exe_ext");
+
     } else {
 	link("$installbin/$perl_verbase$ver$exe_ext",
 		"$installbin/$perl$exe_ext");
@@ -466,6 +480,19 @@ if ($archname && ! samepath($installbin, '.') && ($^O ne 'dos') && ! $Is_VMS) {
 	# VOS doesn't support hard links, so use a symlink.
 	symlink("$installbin/$perl_verbase$ver$exe_ext",
 		"$installbin/$archperl");
+    } elsif ($Config{osname} eq 'android') {
+	# Remove from and get script with LD_LiBRARY_PATH and LD_PRELOAD in place
+	open my $androidperlscript, ">", "$installbin/$archperl"
+	    or die "Cannot open $installbin/$archperl: $!";
+	print $androidperlscript  <<EOF ;
+#!$Config{sh}
+export LD_PRELOAD=$Config{installarchlib}/CORE/libperl.so
+eval 'exec $Config{installbin}/$perl_verbase$ver$exe_ext \${1+"\$@"}'
+     	   if \$running_under_some_shell;
+EOF
+	close $androidperlscript
+	    or die "Cannot close $installbin/$archperl: $!";
+	chmod(0755, "$installbin/$archperl");
     } else {
 	link("$installbin/$perl_verbase$ver$exe_ext", "$installbin/$archperl");
     }

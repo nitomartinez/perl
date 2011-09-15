@@ -845,7 +845,6 @@ INSTALL_DEPENDENCE =
 
 install.perl:	$(INSTALL_DEPENDENCE) installperl
 	$(LDLIBPTH) $(MINIPERL) -MCross=$(CROSS_NAME) installperl -p --destdir=$(DESTDIR) $(INSTALLFLAGS) $(STRIPFLAGS)
-#	$(LDLIBPTH) ./perl installperl --destdir=$(DESTDIR) $(INSTALLFLAGS) $(STRIPFLAGS)
 	-@test ! -s extras.lst || $(MAKE) extras.install
 
 install.man:	all installman
