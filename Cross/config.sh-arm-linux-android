@@ -9,6 +9,9 @@
 #            /usr/local/android-ndk/platforms/android-3/arch-x86/usr/include
 #            /usr/local/android-ndk/docs/STABLE-APIS.html
 #            /usr/local/android-ndk/docs/system/libc/
+# 17-09-2011 Nito@Qindel.ES -- Fixed some non existent network calls, see
+#            /usr/local/android-ndk/platforms/android-3/arch-x86/usr/include/netdb.h
+#            Also implement in Socket.h getprotobyname...
 
 # Package name      : perl5
 # Source directory  : .
@@ -247,8 +250,8 @@ d_getnetbyname_r='undef'
 d_getnetent_r='undef'
 d_getnetprotos='undef'
 d_getpagsz='define'
-d_getpbyname='define'
-d_getpbynumber='define'
+d_getpbyname='undef'
+d_getpbynumber='undef'
 d_getpent='undef'
 d_getpgid='define'
 d_getpgrp2='undef'
@@ -258,7 +261,7 @@ d_getprior='define'
 d_getprotobyname_r='undef'
 d_getprotobynumber_r='undef'
 d_getprotoent_r='undef'
-d_getprotoprotos='undef'
+d_getprotoprotos='define'
 d_getprpwnam='undef'
 d_getpwent='undef'
 d_getpwent_r='undef'
@@ -689,7 +692,7 @@ i_sysfile='define'
 i_sysfilio='undef'
 i_sysin='undef'
 i_sysioctl='define'
-i_syslog='define'
+i_syslog='undef'
 i_sysmman='define'
 i_sysmode='undef'
 i_sysmount='define'

@@ -50,6 +50,7 @@ eg:
 
     cd /tmp/perl
     adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl
+    adb push sdcard/com.theqvd.android.perl /sdcard/com.theqvd.android.perl
 
 =head2 Testing
 

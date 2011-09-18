@@ -792,7 +792,7 @@ lib/buildcustomize.pl: $(MINIPERL_EXE) write_buildcustomize.pl
 unidatafiles $(unidatafiles): uni.data
 
 uni.data: miniperl$(EXE_EXT) $(CONFIGPM) lib/unicore/mktables
-	cd lib/unicore && $(LDLIBPTH) ../../miniperl -I../../lib mktables -P ../../pod -maketest -makelist -p
+	cd lib/unicore && $(LDLIBPTH) ../../miniperl -MCross=$(CROSS_NAME) -I../../lib mktables -P ../../pod -maketest -makelist -p
 #	Commented out so always runs, mktables looks at far more files than we
 #	can in this makefile to decide if needs to run or not
 #	touch uni.data

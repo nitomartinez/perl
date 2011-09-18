@@ -97,9 +97,16 @@ if [[ "x$1" == xmicroperl* ]] ; then
 fi
 
 if [[ "x$1" != xmicroperl* ]] ; then
+  make generate_uudmap
   make uudmap.h
   make git_version.h
 fi
+
+if [[ "x$1" != xmicroperl* ]] ; then
+  make uudmap.h
+  make git_version.h
+fi
+
 if [[ "x$1" == xmicroperl* ]] ; then
 #  make -f Makefile.micro uudmap.h
   make -f Makefile.micro git_version.h
@@ -182,6 +189,9 @@ make -f ${MAKEFILE} libperl.so OBJ_EXT=.o LIB_EXT=.a AR=${AR} || exit 1
 
 echo "[building perl.${CROSS_NAME}]"
 make -f ${MAKEFILE} perl.${CROSS_NAME} MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.a AR=${AR} LIBPERL=libperl.so || exit 1
+
+echo "[building unidatafiles]"
+make -f ${MAKEFILE} unidatafiles MAKEFILE=${MAKEFILE} OBJ_EXT=.o LIB_EXT=.a AR=${AR} LIBPERL=libperl.so || exit 1
 
 echo "[building utilities]"
 make -f ${MAKEFILE} utilities MAKEFILE=${MAKEFILE} PERL="${HOST_PATH}/${MPERL} -MCross" || exit 1
