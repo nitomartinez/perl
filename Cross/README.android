@@ -45,8 +45,8 @@ eg:
 =head2 Installing
 
 
-    cd xcompile   
-    make -f Makefile-cross-arm install.perl DESTDIR=/tmp/perl  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
+    cd Cross
+    sh package-android-sh
 
     cd /tmp/perl
     adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl
@@ -69,7 +69,12 @@ sys	0m42.120s
 
 =head2 NOTES
 
-Android linker does not allow to use symbols from the main executable in any of the libraries.
+=over 4
+
+=item * Android linker does not allow to use symbols from the main executable in any of the libraries.
 This forces us to build a libperl.so. To preload this library we create a perl shell script
 wrapper that sets LD_PRELOAD to the libper.so file.
 
+=item * Android does not implement getprotobyname and getprotobynumber, see L<http://codingrelic.geekhold.com/2008/11/six-million-dollar-libc.html>, a stub implementation is done to get most of the perl modules working.
+
+=back

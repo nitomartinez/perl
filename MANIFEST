@@ -2805,6 +2805,7 @@ cpan/Win32/Win32.pm			Win32 extension Perl module
 cpan/Win32/Win32.xs			Win32 extension external subroutines
 Cross/build-arm-n770-sh		Cross-compilation
 Cross/build-arm-android-sh	Cross-compilation (Android)
+Cross/package-android-sh	Installation (Android)
 Cross/cflags-cross-arm		Cross-compilation
 Cross/config			Cross-compilation
 Cross/config.sh-arm-linux	Cross-compilation
@@ -5338,3 +5339,6 @@ x2p/util.c			Utility routines
 x2p/util.h			Public declarations for the above
 x2p/walk.c			Parse tree walker
 XSUB.h				Include file for extension subroutines
+android/android.h		Generic include for android port
+android/perl_android_getprotobynameandnumber.c	Generic include for android port
+

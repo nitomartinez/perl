@@ -1372,8 +1372,13 @@ struct IPerlSockInfo
 #define PerlSock_endnetent		endnetent
 #define PerlSock_getpeername(s, n, l)	getpeername(s, n, l)
 
+#ifdef ANDROID
+#define PerlSock_getprotobyname(n)	fake_getprotobyname(n)
+#define PerlSock_getprotobynumber(n)	fake_getprotobynumber(n)
+#else
 #define PerlSock_getprotobyname(n)	getprotobyname(n)
 #define PerlSock_getprotobynumber(n)	getprotobynumber(n)
+#endif
 #define PerlSock_getprotoent		getprotoent
 #define PerlSock_endprotoent		endprotoent
 

@@ -2887,6 +2887,10 @@ typedef pthread_key_t	perl_key;
 #  include "netware.h"
 #endif
 
+#ifdef ANDROID
+#  include "android.h"
+#endif
+
 #define STATUS_UNIX	PL_statusvalue
 #ifdef VMS
 #   define STATUS_NATIVE	PL_statusvalue_vms
