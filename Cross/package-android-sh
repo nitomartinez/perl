@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Simple script that creates an android installation into /tmp/perl
+#
+# Nito@Qindel.ES -- 19/9/2011
+
+basedir=$(dirname $0)/../xcompile
+DESTDIR=/tmp/perl
+
+curdir=$(pwd)
+cd $basedir
+make -f Makefile-cross-arm install.perl DESTDIR=$DESTDIR  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
