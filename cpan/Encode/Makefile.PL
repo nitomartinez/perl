@@ -45,6 +45,8 @@ WriteMakefile(
     INC         => '-I' . File::Spec->catfile( '.', 'Encode' ),
     PMLIBDIRS   => \@pmlibdirs,
     INSTALLDIRS => 'perl',
+#    PERLRUN_CROSS => exists($ENV{PERLRUN_CROSS}) ? $ENV{PERLRUN_CROSS} : undef ,
+    PERLRUN_CROSS => '-MCross',
 );
 
 package MY;

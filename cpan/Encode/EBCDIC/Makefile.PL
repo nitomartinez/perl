@@ -10,7 +10,7 @@ my %tables = (
            ],
           );
 
-WriteMakefile(
+my %makefileattrs = (
               INC		=> "-I../Encode",
           NAME		=> 'Encode::'.$name,
           VERSION_FROM	=> "$name.pm",
@@ -24,6 +24,13 @@ WriteMakefile(
           # OS 390 winges about line numbers > 64K ???
           XSOPT => '-nolinenumbers',
           );
+
+# Need further investigation as why this doesn't get set
+if ("@ARGV" =~ /\bPERLRUN_CROSS=(.*)\b/) {
+    $makefileattrs{PERLRUN_CROSS}=$1;
+}
+
+WriteMakefile(%makefileattrs);
 
 package MY;
 

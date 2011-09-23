@@ -28,7 +28,7 @@ unless ($ENV{AGGREGATE_TABLES}){
 
 my $name = 'CN';
 
-WriteMakefile(
+my %makefileattrs = (
               INC		=> "-I../Encode",
           NAME		=> 'Encode::'.$name,
           VERSION_FROM	=> "$name.pm",
@@ -43,6 +43,13 @@ WriteMakefile(
           XSOPT => '-nolinenumbers',
               XSPROTOARG => '-noprototypes',
           );
+# Need further investigation as why this doesn't get set
+if ("@ARGV" =~ /\bPERLRUN_CROSS=(.*)\b/) {
+    $makefileattrs{PERLRUN_CROSS}=$1;
+}
+
+WriteMakefile(%makefileattrs);
+
 
 package MY;
 
