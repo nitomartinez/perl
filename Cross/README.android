@@ -67,6 +67,13 @@ In a two core 2.5GHz computer I compile perl in:
 user	9m1.070s
 sys	0m42.120s
 
+=head2 CPAN
+
+to get cpan working you need to set 
+
+o conf makepl_arg PERL=/data/data/com.theqvd.android.perl/bin/perl
+o conf commit
+
 =head2 NOTES
 
 =over 4
