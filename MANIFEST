@@ -5341,4 +5341,9 @@ x2p/walk.c			Parse tree walker
 XSUB.h				Include file for extension subroutines
 android/android.h		Generic include for android port
 android/perl_android_getprotobynameandnumber.c	Generic include for android port
+android/make			Binary compile make in arm androidfor android to get basic cpan working
+android/cp			Basic cp to get basic cpan working (emulate cp with cat)
+android/pwd			Basic pwd to get basic cpan working (emulate pwd with system)
+android/rm			Basic twisted rm to get basic cpan working (remove the -f flag)
+android/touch			Basic touch to get basic cpan working (emulate touch with perl)
 

@@ -44,13 +44,14 @@ eg:
 
 =head2 Installing
 
-
     cd Cross
     sh package-android-sh
 
     cd /tmp/perl
     adb push data/data/com.theqvd.android.perl /data/data/com.theqvd.android.perl
     adb push sdcard/com.theqvd.android.perl /sdcard/com.theqvd.android.perl
+    # Revise the correct path
+    adb shell mkdir /sdcard/com.theqvd.android.perl/lib/site_perl/5.15.1/arm-linux-androideabi
 
 =head2 Testing
 
@@ -67,12 +68,17 @@ In a two core 2.5GHz computer I compile perl in:
 user	9m1.070s
 sys	0m42.120s
 
-=head2 CPAN
+=head2 CPAN and modules
 
 to get cpan working you need to set 
 
 o conf makepl_arg PERL=/data/data/com.theqvd.android.perl/bin/perl
 o conf commit
+
+# To install modules, run the following:
+
+perl Makefile.PL PERL=/data/data/com.theqvd.android.perl/bin/perl
+
 
 =head2 NOTES
 
@@ -83,5 +89,24 @@ This forces us to build a libperl.so. To preload this library we create a perl s
 wrapper that sets LD_PRELOAD to the libper.so file.
 
 =item * Android does not implement getprotobyname and getprotobynumber, see L<http://codingrelic.geekhold.com/2008/11/six-million-dollar-libc.html>, a stub implementation is done to get most of the perl modules working.
+
+=item * A modification in dist/Cwd/Cwd.pm is needed to include the /data/data/com.theqvd.android.perl/bin path to the list of secure paths for pwd.
+
+=item * During the install phase several scripts and a binary are copied to /data/data/com.theqvd.android.perl/bin to get cpan working in android. Among them are:
+
+=over 4
+
+=item * pwd. Uses the shell internal pwd to emulate the pwd commmand.
+
+=item * cp. Emulates cp with cat.
+
+=item * rm. A script that removes the -f flag in the arguments to rm.
+
+=item * touch. Simple perl script that updates the atime of the files passed.
+
+=item * make. This is a binary file for gnu make 3.81
+
+=back
+
 
 =back

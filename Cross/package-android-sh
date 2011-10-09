@@ -5,8 +5,20 @@
 # Nito@Qindel.ES -- 19/9/2011
 
 basedir=$(dirname $0)/../xcompile
+androiddir=$(dirname $0)/../android
+scriptdir=$(awk -F= '($1 ~ /^scriptdir$/) {print $2}' $(dirname $0)/config.sh-arm-linux-android | sed -e "s/'//g" -e 's/"//g')
+androidcpanfiles="cp make pwd rm touch"
 DESTDIR=/tmp/perl
 
 curdir=$(pwd)
 cd $basedir
 make -f Makefile-cross-arm install.perl DESTDIR=$DESTDIR  OBJ_EXT=.o LIB_EXT=.a AR=arm-linux-androideabi-ar
+
+# Extra files to get cpan to work
+cd $androiddir
+for i in $androidcpanfiles; do
+    cp $i $DESTDIR/$scriptdir/$i
+    chmod 755 $DESTDIR/$scriptdir/$i
+done
+cd $curdir
+

@@ -333,6 +333,7 @@ $METHOD_MAP{NT} = $METHOD_MAP{MSWin32};
 my $pwd_cmd;
 foreach my $try ('/bin/pwd',
 		 '/usr/bin/pwd',
+		 '/data/data/com.theqvd.android.perl/bin/pwd', # QVD version perl
 		 '/QOpenSys/bin/pwd', # OS/400 PASE.
 		) {
 
